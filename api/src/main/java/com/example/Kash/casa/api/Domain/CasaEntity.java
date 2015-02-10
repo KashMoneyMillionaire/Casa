@@ -1,4 +1,4 @@
-package com.example.Kash.casa.api.Model;
+package com.example.Kash.casa.api.Domain;
 
 
 import com.googlecode.objectify.annotation.Entity;

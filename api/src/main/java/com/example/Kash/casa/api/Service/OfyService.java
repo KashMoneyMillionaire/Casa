@@ -1,9 +1,9 @@
 package com.example.Kash.casa.api.Service;
 
-import com.example.Kash.casa.api.Model.CasaEntity;
-import com.example.Kash.casa.api.Model.Device;
-import com.example.Kash.casa.api.Model.Photo;
-import com.example.Kash.casa.api.Model.UserProfile;
+import com.example.Kash.casa.api.Domain.CasaEntity;
+import com.example.Kash.casa.api.Domain.Device;
+import com.example.Kash.casa.api.Domain.Photo;
+import com.example.Kash.casa.api.Domain.UserProfile;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;

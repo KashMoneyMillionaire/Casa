@@ -6,7 +6,7 @@
 
 package com.example.Kash.casa.api.Service;
 
-import com.example.Kash.casa.api.Model.UserProfile;
+import com.example.Kash.casa.api.Domain.UserProfile;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;

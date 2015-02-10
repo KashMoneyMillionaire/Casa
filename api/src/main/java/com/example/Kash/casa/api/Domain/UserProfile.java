@@ -1,4 +1,4 @@
-package com.example.Kash.casa.api.Model;
+package com.example.Kash.casa.api.Domain;
 
 import com.example.Kash.casa.api.Helpers.SaltedHash;
 import com.google.api.server.spi.config.AnnotationBoolean;
@@ -19,14 +19,25 @@ import java.util.List;
 @Subclass(name = "User")
 public class UserProfile extends CasaEntity {
 
-    private String Username;
-    private String Email;
+    @Index private String Username;
+    @Index private String Email;
     private String PasswordSalt;
     private String PasswordHash;
     private Date CreatedDate;
+    private Date LastLogInDate;
 
     @Index
     private List<Key<Device>> Devices = new ArrayList<>();
+
+    public UserProfile() {}
+
+    public UserProfile(String username, String email, String clearTextPassword){
+        Username = username;
+        Email = email;
+        CreatedDate = new Date();
+        Devices = new ArrayList<>();
+        setPassword(clearTextPassword);
+    }
 
     public void setPassword(String clearTextPassword){
         SaltedHash saltedHash = new SaltedHash(clearTextPassword);
@@ -69,5 +80,13 @@ public class UserProfile extends CasaEntity {
 
     public void setCreatedDate(Date createdDate) {
         CreatedDate = createdDate;
+    }
+
+    public Date getLastLogInDate() {
+        return LastLogInDate;
+    }
+
+    public void setLastLogInDate(Date lastLogInDate) {
+        LastLogInDate = lastLogInDate;
     }
 }

@@ -1,4 +1,4 @@
-package com.example.Kash.casa.api.Model;
+package com.example.Kash.casa.api.Domain;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Subclass;
@@ -12,10 +12,17 @@ import com.googlecode.objectify.annotation.Subclass;
 public class Device extends CasaEntity {
 
     private String Name;
+    private String AndroidId;
     private int Height;
     private int Width;
 
     private Key<UserProfile> User;
+
+    public Device(String id, String name, int height, int width){
+        Name = name;
+        Height = height;
+        Width = width;
+    }
 
     public String getName() {
         return Name;
@@ -43,6 +50,13 @@ public class Device extends CasaEntity {
     }
     public void setUser(Key<UserProfile> user) {
         User = user;
+    }
+
+    public String getAndroidId() {
+        return AndroidId;
+    }
+    public void setAndroidId(String androidId) {
+        AndroidId = androidId;
     }
 }
 

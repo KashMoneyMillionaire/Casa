@@ -6,13 +6,15 @@ import android.util.Pair;
 import android.widget.Toast;
 
 import com.example.kash.casa.Models.UserProfileModel;
-import com.example.kash.casa.api.casaApi.model.UserProfile;
 import com.example.kash.casa.api.userProfileApi.UserProfileApi;
-import com.example.kash.casa.api.userProfileApi.model.ApiMessage;
+import com.example.kash.casa.api.userProfileApi.model.UserProfile;
+import com.example.kash.casa.api.userProfileApi.model.UserProfileMessage;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestInitializer;
 
 import java.io.IOException;
 
@@ -43,7 +45,14 @@ public class UserRegisterTask extends AsyncTask<Pair<Context, UserProfileModel>,
 
         if (userProfileService == null) {  // Only do this once
             UserProfileApi.Builder builder = new UserProfileApi.Builder(AndroidHttp.newCompatibleTransport(),
-                    new AndroidJsonFactory(), null)
+                    new AndroidJsonFactory(),
+                    //TODO remove this when not debugging
+                    new HttpRequestInitializer() {
+                        public void initialize(HttpRequest httpRequest) {
+                            httpRequest.setConnectTimeout(4000);
+                            httpRequest.setReadTimeout(0);
+                        }
+                    })
                     // options for running against local devappserver
                     // - 10.0.2.2 is localhost's IP address in Android emulator
                     // - turn off compression when running against local devappserver
@@ -62,10 +71,10 @@ public class UserRegisterTask extends AsyncTask<Pair<Context, UserProfileModel>,
         context = params[0].first;
         UserProfileModel userProfile = params[0].second;
         UserProfile newUserP;
-        ApiMessage message;
+        UserProfileMessage message;
 
         try {
-            message = userProfileService.registerUser(userProfile.username, userProfile.email, userProfile.password).execute();
+            message = userProfileService.register(userProfile.username, userProfile.email, userProfile.password).execute();
         } catch (IOException e) {
             return false;
         }
