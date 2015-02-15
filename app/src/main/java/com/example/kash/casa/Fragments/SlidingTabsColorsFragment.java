@@ -1,4 +1,4 @@
-package com.example.kash.casa;
+package com.example.kash.casa.Fragments;
 
 /*
  * Copyright 2013 The Android Open Source Project
@@ -28,6 +28,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.android.common.view.SlidingTabLayout;
+import com.example.kash.casa.ContentFragment;
+import com.example.kash.casa.R;
 
 import java.util.ArrayList;
 import java.util.List;

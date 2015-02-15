@@ -22,10 +22,10 @@ public class Device {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         display.getRealSize(point);
-        deviceModel.Name = String.format("%s %s", Build.BRAND, Build.MODEL);
-        deviceModel.Height = Math.max(point.x, point.y);
-        deviceModel.Width = Math.min(point.x, point.y);
-        deviceModel.Id = Settings.Secure.ANDROID_ID;
+        deviceModel.name = String.format("%s %s", Build.BRAND, Build.MODEL);
+        deviceModel.height = Math.max(point.x, point.y);
+        deviceModel.width = Math.min(point.x, point.y);
+        deviceModel.id = Settings.Secure.ANDROID_ID;
 
         return deviceModel;
     }

@@ -1,4 +1,4 @@
-package com.example.kash.casa;
+package com.example.kash.casa.Activities;
 /*
 * Copyright 2013 The Android Open Source Project
 *
@@ -16,13 +16,14 @@ package com.example.kash.casa;
 */
 
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ViewAnimator;
+
+import com.example.kash.casa.Fragments.SlidingTabsColorsFragment;
+import com.example.kash.casa.R;
 
 /**
  * A simple launcher activity containing a summary sample description, sample log and a custom
