@@ -13,13 +13,16 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.kash.casa.Helpers.Device;
 import com.example.kash.casa.Helpers.LoginHelper;
 import com.example.kash.casa.Models.UserProfileModel;
 import com.example.kash.casa.R;
 import com.example.kash.casa.Tasks.UserLoginTask;
 import com.example.kash.casa.api.userProfileApi.model.UserProfile;
 
+import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 /**
@@ -29,9 +32,9 @@ public class LoginFragment extends Fragment {
 
     // UI references.
     @InjectView(R.id.login_email)
-    EditText mEmailView;
+    EditText mEmailUsername;
     @InjectView(R.id.login_password)
-    EditText mPasswordView;
+    EditText mPassword;
     @InjectView(R.id.login_progress)
     View mProgressView;
     @InjectView(R.id.login_form)
@@ -47,12 +50,16 @@ public class LoginFragment extends Fragment {
 
         // Inflate the layout containing a title and body text.
         View rootView = inflater.inflate(R.layout.fragment_login, container, false);
+        ButterKnife.inject(this, rootView);
 
         // Set up the login form.
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        mPassword.setOnEditorActionListener(new TextView.OnEditorActionListener()
+        {
             @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
+            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent)
+            {
+                if (id == R.id.login || id == EditorInfo.IME_NULL)
+                {
                     attemptLogin();
                     return true;
                 }
@@ -72,8 +79,8 @@ public class LoginFragment extends Fragment {
 
     private boolean verifyForm(String email, String password) {
         // Reset errors.
-        mEmailView.setError(null);
-        mPasswordView.setError(null);
+        mEmailUsername.setError(null);
+        mPassword.setError(null);
 
 
         boolean errorsExist = false;
@@ -81,15 +88,15 @@ public class LoginFragment extends Fragment {
 
         // Check for a valid password, if the user entered one.
         if (TextUtils.isEmpty(password)) {
-            mPasswordView.setError(getString(R.string.error_field_required));
-            focusView = mPasswordView;
+            mPassword.setError(getString(R.string.error_field_required));
+            focusView = mPassword;
             errorsExist = true;
         }
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
+            mEmailUsername.setError(getString(R.string.error_field_required));
+            focusView = mEmailUsername;
             errorsExist = true;
         }
 
@@ -132,8 +139,8 @@ public class LoginFragment extends Fragment {
         }
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        String email = mEmailUsername.getText().toString();
+        String password = mPassword.getText().toString();
 
         boolean isFormValid = verifyForm(email, password);
         if (!isFormValid) return;
@@ -142,15 +149,50 @@ public class LoginFragment extends Fragment {
         // perform the user login attempt.
         showProgress(true);
         UserProfileModel model = new UserProfileModel(email, email, password);
+        model.Device = Device.getDeviceInfo(getActivity());
 
         mAuthTask = new UserLoginTask() {
             @Override
             protected void onPostExecute(UserProfile result) {
                 mAuthTask = null;
-                showProgress(false);
+                if (result != null)
+                {
+                    String message = result.getUsername();
 
-                if (result != null) {
-                    LoginHelper.setLoginPreferencesAndContinue(result, getActivity());
+                    //if there is a $, we have an error
+                    if (message.charAt(0) == '$')
+                    {
+                        View focusView;
+                        switch (message)
+                        {
+                            case "$username":
+                                mEmailUsername.setError(getString(R.string.error_username_exists));
+                                focusView = mEmailUsername;
+                                focusView.requestFocus();
+                                break;
+                            case "$password":
+                                mPassword.setError(getString(R.string.error_password_incorrect));
+                                focusView = mPassword;
+                                focusView.requestFocus();
+                                break;
+                            default:
+                                Toast.makeText(getActivity(),
+                                               "Login failure: an unknown error occurred.",
+                                               Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+                    }
+                    //successful login
+                    else
+                    {
+                        LoginHelper.setLoginPreferencesAndContinue(result, getActivity());
+                    }
+                }
+                else
+                {
+                    Toast.makeText(getActivity(),
+                                   "Login failure: an unknown error occurred.",
+                                   Toast.LENGTH_SHORT).show();
                 }
             }
 

@@ -1,76 +1,156 @@
 package com.example.kash.casa.Activities;
-/*
-* Copyright 2013 The Android Open Source Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
 
 
+import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.view.View;
 
-import com.example.kash.casa.Fragments.SlidingTabsColorsFragment;
+import com.example.kash.casa.Fragments.CameraPreviewFragment;
+import com.example.kash.casa.Fragments.FriendListFragment;
 import com.example.kash.casa.R;
 
-/**
- * A simple launcher activity containing a summary sample description, sample log and a custom
- * {@link android.support.v4.app.Fragment} which can display a view.
- * <p/>
- * For devices with displays with a width of 720dp or greater, the sample log is always visible,
- * on other devices it's visibility is controlled by an item on the Action Bar.
- */
-public class MainActivity extends FragmentActivity {
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 
-    public static final String TAG = "MainActivity";
+public class MainActivity extends Activity
+{
 
-    // Whether the Log Fragment is currently shown
-    private boolean mLogShown;
+    @InjectView(R.id.loginPager)
+    ViewPager mPager;
+
+    private static int pageCount;
+    private int mPosition;
+
+    private Fragment[] fragments;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
+        ButterKnife.inject(this);
 
-        if (savedInstanceState == null) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            SlidingTabsColorsFragment fragment = new SlidingTabsColorsFragment();
-            transaction.replace(R.id.sample_content_fragment, fragment);
-            transaction.commit();
+        fragments = new Fragment[]{new CameraPreviewFragment(), new FriendListFragment()};
+        pageCount = fragments.length;
+        mPosition = 0;
 
-        }
+        // Instantiate a ViewPager and a PagerAdapter.
+        final PagerAdapter mPagerAdapter = new ScreenSlidePagerAdapter(getFragmentManager());
+        mPager.setAdapter(mPagerAdapter);
+        mPager.setOffscreenPageLimit(1);
+        mPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener()
+        {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
+            {
+            }
+
+            @Override
+            public void onPageSelected(int position)
+            {
+                mPosition = position;
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state)
+            {
+                switch (state)
+                {
+                    case ViewPager.SCROLL_STATE_IDLE:
+                        fixStatusBar();
+//                        if(mPosition == 1) {
+//                            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//                            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+//                        } else {
+//                            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//                            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+//                        }
+                }
+            }
+        });
+
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    protected void onResume()
+    {
+        super.onResume();
+        fixStatusBar();
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    public void onBackPressed()
+    {
+        //TODO add back logic
+//        if (mPager.getCurrentItem() == 0) {
+//            // If the user is currently looking at the first step, allow the system to handle the
+//            // Back button. This calls finish() on this activity and pops the back stack.
+//            super.onBackPressed();
+//        } else {
+//            // Otherwise, select the previous step.
+//            mPager.setCurrentItem(mPager.getCurrentItem() - 1);
+//        }
+        super.onBackPressed();
+    }
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+    public void fixStatusBar()
+    {
+        View decorView = getWindow().getDecorView();
+        int uiOptions = 0;
+        if (fragments[mPosition] instanceof CameraPreviewFragment)
+        {
+//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            // Hide the status bar.
+            uiOptions =
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                    View.SYSTEM_UI_FLAG_FULLSCREEN;
+//                View.SYSTEM_UI_FLAG_LOW_PROFILE;
+        }
+        else
+        {
+//            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+
+            // Show the status bar.
+            uiOptions =
+//                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+//                View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+        }
+        decorView.setSystemUiVisibility(uiOptions);
+    }
+
+    private class ScreenSlidePagerAdapter extends FragmentPagerAdapter
+    {
+        public ScreenSlidePagerAdapter(FragmentManager fm)
+        {
+            super(fm);
         }
 
-        return super.onOptionsItemSelected(item);
+        @Override
+        public Fragment getItem(int position)
+        {
+            return fragments[position];
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position)
+        {
+            return "Camera";
+        }
+
+        @Override
+        public int getCount()
+        {
+            return pageCount;
+        }
     }
 }

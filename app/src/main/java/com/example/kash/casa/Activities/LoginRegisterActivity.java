@@ -14,14 +14,15 @@ import com.example.kash.casa.Fragments.LoginFragment;
 import com.example.kash.casa.Fragments.RegisterFragment;
 import com.example.kash.casa.R;
 
+import butterknife.InjectView;
+
 /**
  * Created by Kash on 1/18/2015.
  */
 public class LoginRegisterActivity extends Activity {
 
     private static final int NUM_PAGES = 2;
-    private ViewPager mPager;
-    private PagerAdapter mPagerAdapter;
+    @InjectView(R.id.loginPager) ViewPager mPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +30,8 @@ public class LoginRegisterActivity extends Activity {
         setContentView(R.layout.activity_login_register);
 
         // Instantiate a ViewPager and a PagerAdapter.
-        mPager = (ViewPager) findViewById(R.id.pager);
-        mPagerAdapter = new ScreenSlidePagerAdapter(getFragmentManager());
+        mPager = (ViewPager) findViewById(R.id.loginPager);
+        PagerAdapter mPagerAdapter = new ScreenSlidePagerAdapter(getFragmentManager());
         mPager.setAdapter(mPagerAdapter);
 
         // Bind the tabs to the ViewPager
@@ -52,10 +53,6 @@ public class LoginRegisterActivity extends Activity {
         }
     }
 
-    /**
-     * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in
-     * sequence.
-     */
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
         public ScreenSlidePagerAdapter(FragmentManager fm) {
             super(fm);

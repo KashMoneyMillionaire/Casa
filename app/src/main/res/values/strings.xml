@@ -20,6 +20,7 @@
 
     <string name="register_email">Email</string>
     <string name="register_email_helper">Email must be verified later</string>
+    <string name="camera_switch">switch camera</string>
 
 
 </resources>

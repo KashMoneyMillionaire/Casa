@@ -1,6 +1,8 @@
 package com.example.Kash.casa.api.Domain;
 
-import com.googlecode.objectify.Key;
+import com.example.Kash.casa.api.Helpers.Deref;
+import com.googlecode.objectify.Ref;
+import com.googlecode.objectify.annotation.Parent;
 import com.googlecode.objectify.annotation.Subclass;
 
 import java.util.ArrayList;
@@ -12,34 +14,47 @@ import java.util.List;
  */
 
 @Subclass(name = "Photo")
-public class Photo extends CasaEntity {
-
+public class Photo extends CasaEntity
+{
     private byte[] Image;
     private Date DateSent;
 
-    private List<Key<Device>> DevicesTo = new ArrayList<>();
+    private List<Ref<Device>> DevicesTo = new ArrayList<>();
+    @Parent
+    Ref<UserProfile> UserFrom;
 
-    private Key<UserProfile> UserFrom;
-
-    public byte[] getImage() {
+    public byte[] getImage()
+    {
         return Image;
     }
-    public void setImage(byte[] image) {
+
+    public void setImage(byte[] image)
+    {
         Image = image;
     }
 
-    public Date getDateSent() {
+    public Date getDateSent()
+    {
         return DateSent;
     }
-    public void setDateSent(Date dateSent) {
+
+    public void setDateSent(Date dateSent)
+    {
         DateSent = dateSent;
     }
 
-    public List<Key<Device>> getDevicesTo() {
-        return DevicesTo;
+    public List<Device> getDevicesTo()
+    {
+        return Deref.deRef(DevicesTo);
     }
 
-    public Key<UserProfile> getUserFrom() {
-        return UserFrom;
+    public void setUserFrom(UserProfile user)
+    {
+        UserFrom = Ref.create(user);
+    }
+
+    public UserProfile getUserFrom()
+    {
+        return UserFrom.get();
     }
 }

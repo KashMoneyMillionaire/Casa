@@ -17,7 +17,8 @@ public class CasaPreferenceManager {
     int PRIVATE_MODE = 0;
 
     public enum PrefType {
-        Login(1);
+        Login(1),
+        Camera(2);
 
         private final int value;
 
@@ -31,10 +32,14 @@ public class CasaPreferenceManager {
     private static final String LOGIN_INFO_PREF_NAME = "CasaPref";
     private static final String PREF_TYPE = "CasaPref";
 
+    //User login
     private static final String IS_LOGIN = "isLoggedIn";
-    private static final String USERNAME = "name";
+    private static final String USERNAME = "username";
     private static final String USER_EMAIL = "email";
     private static final String USER_LOGIN_DATE = "loginDate";
+
+    //camera preferences
+    private static final String CAMERA_ID = "cameraId";
 
     public CasaPreferenceManager(Context context, PrefType prefType){
         this._context = context;
@@ -54,7 +59,6 @@ public class CasaPreferenceManager {
 
     public boolean logoutUser(){
         if (pref.getInt(PREF_TYPE, 0) != PrefType.Login.getValue()) return false;
-
         editor.clear();
         editor.commit();
         return true;
@@ -62,5 +66,18 @@ public class CasaPreferenceManager {
 
     public boolean isLoggedIn(){
         return pref.getBoolean(IS_LOGIN, false);
+    }
+
+    public void storeCameraSettings(int cameraDirectionId){
+        editor.putInt(CAMERA_ID, cameraDirectionId);
+        editor.commit();
+    }
+
+    public String getUsername(){
+        return pref.getString(USERNAME, "");
+    }
+
+    public int getCameraOreintationId(){
+        return pref.getInt(CAMERA_ID, 0);
     }
 }

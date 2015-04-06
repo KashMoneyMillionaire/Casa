@@ -20,12 +20,15 @@ import com.example.kash.casa.R;
 import com.example.kash.casa.Tasks.UserRegisterTask;
 import com.example.kash.casa.api.userProfileApi.model.UserProfile;
 
+import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 /**
  * Created by Kash on 1/18/2015.
+ * Do work homie.
  */
-public class RegisterFragment extends Fragment {
+public class RegisterFragment extends Fragment
+{
 
     // UI references.
     @InjectView(R.id.register_username)
@@ -43,26 +46,33 @@ public class RegisterFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             Bundle savedInstanceState)
+    {
 
         // Inflate the layout containing a title and body text.
         View rootView = inflater.inflate(R.layout.fragment_register, container, false);
+        ButterKnife.inject(this, rootView);
 
         //set actions on elements
-        mPasswordConfirmed.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        mPasswordConfirmed.setOnEditorActionListener(new TextView.OnEditorActionListener()
+        {
             @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+            {
                 boolean handled = false;
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                if (actionId == EditorInfo.IME_ACTION_DONE)
+                {
                     handled = true;
                     registerUser();
                 }
                 return handled;
             }
         });
-        mRegisterButton.setOnClickListener(new View.OnClickListener() {
+        mRegisterButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 registerUser();
             }
         });
@@ -70,8 +80,10 @@ public class RegisterFragment extends Fragment {
         return rootView;
     }
 
-    private void registerUser() {
-        if (mRegisterTask != null) {
+    private void registerUser()
+    {
+        if (mRegisterTask != null)
+        {
             return;
         }
 
@@ -83,26 +95,64 @@ public class RegisterFragment extends Fragment {
         UserProfileModel upm = new UserProfileModel("email", "username", "password");
         upm.Device = Device.getDeviceInfo(getActivity());
 
-        mRegisterTask = new UserRegisterTask() {
+        mRegisterTask = new UserRegisterTask()
+        {
             @Override
-            protected void onPostExecute(UserProfile result) {
-                if (result != null) {
-                    Toast.makeText(getActivity(), "Registration complete", Toast.LENGTH_SHORT).show();
-                    LoginHelper.setLoginPreferencesAndContinue(result, getActivity());
-                } else {
-                    Toast.makeText(getActivity(), "Registration failure", Toast.LENGTH_SHORT).show();
+            protected void onPostExecute(UserProfile result)
+            {
+                mRegisterTask = null;
+                if (result != null)
+                {
+                    String message = result.getUsername();
+
+                    //if there is a $, we have an error
+                    if (message.charAt(0) == '$')
+                    {
+                        View focusView;
+                        switch (message)
+                        {
+                            case "$username":
+                                mUsername.setError(getString(R.string.error_username_exists));
+                                focusView = mUsername;
+                                focusView.requestFocus();
+                                break;
+                            case "$email":
+                                mEmail.setError(getString(R.string.error_email_exists));
+                                focusView = mEmail;
+                                focusView.requestFocus();
+                                break;
+                            default:
+                                Toast.makeText(getActivity(),
+                                               "Registration failure: an unknown error occurred.",
+                                               Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+                    }
+                    //successful register
+                    else
+                    {
+                        LoginHelper.setLoginPreferencesAndContinue(result, getActivity());
+                    }
+                }
+                else
+                {
+                    Toast.makeText(getActivity(),
+                                   "Registration failure: an unknown error occurred.",
+                                   Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            protected void onCancelled() {
+            protected void onCancelled()
+            {
                 mRegisterTask = null;
             }
         };
         mRegisterTask.execute(upm);
     }
 
-    private boolean verifyForm() {
+    private boolean verifyForm()
+    {
 
         // Reset errors.
         mUsername.setError(null);
@@ -120,62 +170,81 @@ public class RegisterFragment extends Fragment {
         View focusView = null;
 
         // Check to make sure passwords match
-        if (TextUtils.isEmpty(passwordConfirm)) {
+        if (TextUtils.isEmpty(passwordConfirm))
+        {
             mPasswordConfirmed.setError(getString(R.string.error_field_required));
             focusView = mPasswordConfirmed;
             errorsExist = true;
-        } else if (!password.equals(passwordConfirm)) {
+        }
+        else if (!password.equals(passwordConfirm))
+        {
             mPasswordConfirmed.setError(getString(R.string.error_password_mismatch));
             focusView = mPasswordConfirmed;
             errorsExist = true;
         }
 
         // Check for a valid password, if the user entered one.
-        if (password.length() < 8 || password.length() > 20) {
+        if (password.length() < 8 || password.length() > 20)
+        {
             mPassword.setError(getString(R.string.error_password_length));
             focusView = mPassword;
             errorsExist = true;
-        } else if (!password.matches(".*[0-9].*")) {
+        }
+        else if (!password.matches(".*[0-9].*"))
+        {
             mPassword.setError(getString(R.string.error_password_contain_number));
             focusView = mPassword;
             errorsExist = true;
-        } else if (!password.matches(".*[!@#$%&].*")) {
+        }
+        else if (!password.matches(".*[!@#$%&].*"))
+        {
             mPassword.setError(getString(R.string.error_password_contain_character));
             focusView = mPassword;
             errorsExist = true;
-        } else if (!password.matches("[A-Za-z0-9!@#$%&]*")) {
+        }
+        else if (!password.matches("[A-Za-z0-9!@#$%&]*"))
+        {
             mPassword.setError(getString(R.string.error_password_character));
             focusView = mPassword;
             errorsExist = true;
         }
 
         // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
+        if (TextUtils.isEmpty(email))
+        {
             mEmail.setError(getString(R.string.error_field_required));
             focusView = mEmail;
             errorsExist = true;
-        } else if (!email.contains("@")) {
-            mEmail.setError(getString(R.string.error_invalid_email));
+        }
+        else if (!email.contains("@"))
+        {
+            mEmail.setError(getString(R.string.error_email_invalid));
             focusView = mEmail;
             errorsExist = true;
         }
 
-        if (TextUtils.isEmpty(username)) {
+        if (TextUtils.isEmpty(username))
+        {
             mUsername.setError(getString(R.string.error_field_required));
             focusView = mUsername;
             errorsExist = true;
-        } else if (username.length() < 3 || username.length() > 16) {
+        }
+        else if (username.length() < 3 || username.length() > 16)
+        {
             mUsername.setError(getString(R.string.error_username_length));
             focusView = mUsername;
             errorsExist = true;
-        } else if (!username.matches("[A-Za-z0-9_]*")) {
+        }
+        else if (!username.matches("[A-Za-z0-9_]*"))
+        {
             mPassword.setError(getString(R.string.error_username_characters));
             focusView = mPassword;
             errorsExist = true;
         }
 
         //update form
-        if (errorsExist) {
+        if (errorsExist)
+        {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
             focusView.requestFocus();

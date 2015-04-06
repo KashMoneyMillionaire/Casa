@@ -7,10 +7,14 @@
     <string name="action_sign_in">Sign in</string>
     <string name="action_sign_in_short">Sign in</string>
 
-    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_email_invalid">This email address is invalid</string>
+    <string name="error_email_exists">The email already exists</string>
+
 
     <string name="error_username_length">The username is too short. 3 to 16 characters</string>
     <string name="error_username_characters">Invalid username. Numbers, letters, and underscores only</string>
+    <string name="error_username_exists">The username already exists</string>
+    <string name="error_username_email_not_exists">The username/email does not exist</string>
 
     <string name="error_field_required">This field is required</string>
 
